@@ -1,2 +1,9 @@
 *.swp
+gtest
+cmake
+build.cmake
+build.gtest
+installed.host
+installed.target
+.repo
 
