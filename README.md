@@ -1,2 +1,2 @@
 # ringbuffer
-Google Android ringbuffer
+Ringbuffer derived from Android's implementation
