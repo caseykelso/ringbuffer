@@ -2,7 +2,7 @@
 <manifest>
 
    <remote name="github"
-           fetch="https://github.com" />
+           fetch="ssh://github.com" />
 
    <project name="caseykelso/ringbuffer"                    remote="github" path="." />
    <project name="google/googletest.git"                    remote="github"    path="gtest"   clone-depth="1"   />
