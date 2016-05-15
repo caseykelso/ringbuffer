@@ -1,0 +1,19 @@
+cmake_minimum_required (VERSION 2.8.10.2)
+project(ringbuffer)
+
+set(CMAKE_BUILD_TYPE Debug)
+set(CMAKE_C_FLAGS_DEBUG "-O0")
+set(CMAKE_C_FLAGS_RELEASE "-Os")
+
+
+set(LIB_RINGBUF_SOURCES ringbuffer.c)
+set(LIB_RINGBUF_HEADERS ringbuffer.h) 
+
+set(PROJECT_SOURCE_FILES ${LIB_RINGBUF_SOURCES})
+
+include_directories(${CMAKE_CURRENT_SOURCE_DIR} )
+add_library(ringbuffer STATIC ${PROJECT_SOURCE_FILES} ${LIB_RINGBUF_HEADERS})
+
+install(TARGETS ringbuffer DESTINATION lib)
+install(FILES ${LIB_RINGBUF_HEADERS} DESTINATION include/ringbuffer)
+
