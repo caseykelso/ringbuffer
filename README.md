@@ -1,2 +1,2 @@
 # ringbuffer
-Steve Karg's ringbuffer
+Google Android ringbuffer
