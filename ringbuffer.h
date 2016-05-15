@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 #pragma once
-#include <stdint.h>
+
 typedef struct ringbuffer_t ringbuffer_t;
 // NOTE:
 // None of the functions below are thread safe when it comes to accessing the

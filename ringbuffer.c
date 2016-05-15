@@ -17,6 +17,7 @@
  ******************************************************************************/
 #include <stdlib.h>
 #include <stdbool.h>
+#include <stdint.h>
 #include "ringbuffer.h"
 
 struct ringbuffer_t 
