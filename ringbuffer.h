@@ -23,27 +23,33 @@ typedef struct ringbuffer_t ringbuffer_t;
 // *rb pointer. It is *NOT* possible to insert and pop/delete at the same time.
 // Callers must protect the *rb pointer separately.
 // Create a ringbuffer with the specified size
-// Returns NULL if memory allocation failed. Resulting pointer must be freed
-// using |ringbuffer_free|.
-ringbuffer_t* ringbuffer_init(const size_t size);
+ringbuffer_t* ringbuffer_init(const size_t size, uint8_t *preallocated_buffer) 
 // Frees the ringbuffer structure and buffer
 // Save to call with NULL.
+
 void ringbuffer_free(ringbuffer_t *rb);
+
 // Returns remaining buffer size
-size_t ringbuffer_available(const ringbuffer_t *rb);
+bool ringbuffer_available(const ringbuffer_t *rb, size_t *result) 
+
 // Returns size of data in buffer
-size_t ringbuffer_size(const ringbuffer_t *rb);
+bool ringbuffer_size(const ringbuffer_t *rb, size_t *result) 
+
 // Attempts to insert up to |length| bytes of data at |p| into the buffer
 // Return actual number of bytes added. Can be less than |length| if buffer
 // is full.
-size_t ringbuffer_insert(ringbuffer_t *rb, const uint8_t *p, size_t length);
+bool ringbuffer_insert(ringbuffer_t *rb, const uint8_t *p, size_t length, size_t *result) 
+
+
 // Peek |length| number of bytes from the ringbuffer into the buffer |p|
 // Return the actual number of bytes peeked. Can be less than |length| if
 // there is less than |length| data available.
-size_t ringbuffer_peek(const ringbuffer_t *rb, uint8_t *p, size_t length);
+bool ringbuffer_peek(const ringbuffer_t *rb, uint8_t *p, size_t length, size_t *result) 
+
+
 // Does the same as |ringbuffer_peek|, but also advances the ring buffer head
-size_t ringbuffer_pop(ringbuffer_t *rb, uint8_t *p, size_t length);
+bool ringbuffer_pop(ringbuffer_t *rb, uint8_t *p, size_t length, size_t *result) 
+
 // Deletes |length| bytes from the ringbuffer starting from the head
 // Return actual number of bytes deleted.
-size_t ringbuffer_delete(ringbuffer_t *rb, size_t length);
-
+bool ringbuffer_delete(ringbuffer_t *rb, size_t length, size_t *result) 

@@ -17,85 +17,157 @@
  ******************************************************************************/
 #include <assert.h>
 #include <stdlib.h>
-#include "osi/include/allocator.h"
-#include "osi/include/ringbuffer.h"
-struct ringbuffer_t {
+
+struct ringbuffer_t 
+{
   size_t total;
   size_t available;
   uint8_t *base;
   uint8_t *head;
   uint8_t *tail;
 };
-ringbuffer_t* ringbuffer_init(const size_t size) {
-  ringbuffer_t* p = osi_calloc(sizeof(ringbuffer_t));
-  if (p == 0)
-    return NULL;
-  p->base = osi_calloc(size);
-  if (p->base == 0) {
-    osi_free(p);
-    return NULL;
-  }
+
+ringbuffer_t* ringbuffer_init(const size_t size, uint8_t *preallocated_buffer) 
+{
+  ringbuffer_t* p = preallocated_buffer;
   p->head = p->tail = p->base;
   p->total = p->available = size;
   return p;
 }
-void ringbuffer_free(ringbuffer_t *rb) {
-  if (rb != NULL)
-    osi_free(rb->base);
-  osi_free(rb);
-}
-size_t ringbuffer_available(const ringbuffer_t *rb) {
-  assert(rb);
-  return rb->available;
-}
-size_t ringbuffer_size(const ringbuffer_t *rb) {
-  assert(rb);
-  return rb->total - rb->available;
-}
-size_t ringbuffer_insert(ringbuffer_t *rb, const uint8_t *p, size_t length) {
-  assert(rb);
-  assert(p);
-  if (length > ringbuffer_available(rb))
-    length = ringbuffer_available(rb);
-  for (size_t i = 0; i != length; ++i) {
-    *rb->tail++ = *p++;
-    if (rb->tail >= (rb->base + rb->total))
-      rb->tail = rb->base;
+
+
+bool ringbuffer_available(const ringbuffer_t *rb, size_t *result) 
+{
+
+  bool status = false;
+
+  if (0 != rb)
+  {
+    status = true;
+    *result = rb->available;
   }
-  rb->available -= length;
-  return length;
+
+  return status;
 }
-size_t ringbuffer_delete(ringbuffer_t *rb, size_t length) {
-  assert(rb);
-  if (length > ringbuffer_size(rb))
-    length = ringbuffer_size(rb);
-  rb->head += length;
-  if (rb->head >= (rb->base + rb->total))
-    rb->head -= rb->total;
-  rb->available += length;
-  return length;
-}
-size_t ringbuffer_peek(const ringbuffer_t *rb, uint8_t *p, size_t length) {
-  assert(rb);
-  assert(p);
-  uint8_t *b = rb->head;
-  size_t copied = 0;
-  while (copied < length && copied < ringbuffer_size(rb)) {
-    *p++ = *b++;
-    if (b >= (rb->base + rb->total))
-      b = rb->base;
-    ++copied;
+
+bool ringbuffer_size(const ringbuffer_t *rb, size_t *result) 
+{
+
+  bool status = false;
+
+  if (0 != rb && 0 != result)
+  {
+    status = true;
+    *result = rb->total - rb->available;
   }
-  return copied;
+
+  return status;
 }
-size_t ringbuffer_pop(ringbuffer_t *rb, uint8_t *p, size_t length) {
-  assert(rb);
-  assert(p);
-  const size_t copied = ringbuffer_peek(rb, p, length);
-  rb->head += copied;
-  if (rb->head >= (rb->base + rb->total))
-    rb->head -= rb->total;
-  rb->available += copied;
-  return copied;
+
+bool ringbuffer_insert(ringbuffer_t *rb, const uint8_t *p, size_t length, size_t *result) 
+{
+  bool status = false;
+
+  if (0 != p && 0 != rb && 0 != result)
+  {
+
+    if (length > ringbuffer_available(rb))
+    {
+      length = ringbuffer_available(rb);
+    }
+
+    for (size_t i = 0; i != length; ++i) 
+    {
+        *rb->tail++ = *p++;
+
+        if (rb->tail >= (rb->base + rb->total))
+        {
+           rb->tail = rb->base;
+        }
+    }
+
+    rb->available -= length;
+    *result = length;
+  }
+
+  return status;
 }
+
+bool ringbuffer_delete(ringbuffer_t *rb, size_t length, size_t *result) 
+{
+    bool status = false;
+
+    if (0 != rb && 0 ! result)
+    {
+       status = true;
+
+       if (length > ringbuffer_size(rb))
+       {
+          length = ringbuffer_size(rb);
+          rb->head += length;
+       }
+
+       if (rb->head >= (rb->base + rb->total))
+       {
+          rb->head -= rb->total;
+          rb->available += length;
+       }
+  
+       *result = length; 
+
+    }
+
+    return status;
+}
+
+
+bool ringbuffer_peek(const ringbuffer_t *rb, uint8_t *p, size_t length, size_t *result) 
+{
+
+    bool status = false;
+    if (0 != result && 0 != rb && 0 != p)
+    {
+      uint8_t *b = rb->head;
+      size_t copied = 0;
+
+      while (copied < length && copied < ringbuffer_size(rb))
+      {
+        *p++ = *b++;
+
+        if (b >= (rb->base + rb->total))
+        {
+           b = rb->base;
+        }
+
+        ++copied;
+      }
+
+      *result = copied;
+
+    } 
+
+    return status;
+}
+
+bool ringbuffer_pop(ringbuffer_t *rb, uint8_t *p, size_t length, size_t *result) 
+{
+  bool status = false;
+
+  if (0 != status && 0 != rb && 0 != p)
+  {
+     const size_t copied = ringbuffer_peek(rb, p, length);
+     rb->head += copied;
+
+     if (rb->head >= (rb->base + rb->total))
+     {
+       rb->head -= rb->total;
+     }
+
+     rb->available += copied;
+     *result = copied;
+
+  }
+  return status;
+}
+
 
