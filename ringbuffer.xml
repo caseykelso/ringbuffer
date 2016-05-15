@@ -4,7 +4,7 @@
    <remote name="github"
            fetch="ssh://github.com" />
 
-   <project name="caseykelso/ringbuffer"                    remote="github" path="." />
+   <project name="caseykelso/ringbuffer"                    remote="github" path="." revision="master" />
    <project name="google/googletest.git"                    remote="github"    path="gtest"   clone-depth="1"   />
 
 </manifest>
