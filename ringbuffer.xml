@@ -6,6 +6,7 @@
 
    <project name="caseykelso/ringbuffer"                    remote="github" path="." revision="master" />
    <project name="google/googletest.git"                    remote="github"    path="gtest"   clone-depth="1" revision="master"  />
+   <project name="Kitware/CMake.git"                        remote="github"    path="cmake" />
 
 </manifest>
 
