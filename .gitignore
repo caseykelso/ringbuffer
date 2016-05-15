@@ -3,6 +3,8 @@ gtest
 cmake
 build.cmake
 build.gtest
+build.tests
+build
 installed.host
 installed.target
 .repo
