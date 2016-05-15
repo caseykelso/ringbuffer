@@ -2,7 +2,7 @@
 #include <assert.h>
 
 extern "C" {
-#include "ringbuffer"
+#include "ringbuffer/ringbuffer.h"
 }
 
 

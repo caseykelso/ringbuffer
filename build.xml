@@ -7,7 +7,9 @@
 <property name="cmake.dir"                value="${basedir}/cmake" />
 <property name="cmake.bin"                value="${install.host.dir}/bin/cmake" />
 <property name="tests.dir"                value="${basedir}/tests" />
-<property name="tests.build.dir"          value="${basedir}/build.tests" />
+<property name="tests.build"              value="${basedir}/build.tests" />
+<property name="test.bin"                 value="${install.host.dir}/bin/ringbuffer_test" />
+<property name="build"                    value="${basedir}/build" />
 
 <target name="all" depends="cmake, gtest" />
 
@@ -33,6 +35,67 @@
       <arg value="-j8" />
       <arg value="install" />
    </exec>  
+</target>
+
+<target name="clean">
+  <delete dir="${tests.build}" />
+</target>
+
+<target name="clean_deep">
+  <delete dir="${install.host.dir}" />
+  <delete dir="${install.target.dir}" />
+  <delete dir="${tests.build}" />
+  <delete dir="${gtest.build}" />
+  <delete dir="${build}" />
+</target>
+
+<target name="ringbuffer">
+  <delete dir="${build}" />
+  <mkdir  dir="${build}" />
+
+  <exec executable="${cmake.bin}" dir="${build}" failonerror="true" >
+    <arg value="-DCMAKE_INSTALL_PREFIX=${install.host.dir}" />
+    <arg value="-DGTEST_INCLUDE_DIR=${install.host.dir}/include" />
+    <arg value="-DINCLUDE_DIR=${install.host.dir/include}" />
+    <arg value="-DDEPENDENCIES_LIBRARY_DIR=${install.host.dir}/lib" />
+    <arg value="-DDEPENDENCIES_INCLUDE_DIR=${install.host.dir}/include" />
+    <arg value="-DINSTALL_LIBRARY_DIR=${install.host.dir}/lib" />
+    <arg value="${basedir}" />
+  </exec>
+
+  <exec executable="make" dir="${build}" failonerror="true">
+  </exec>
+
+  <exec executable="make" dir="${build}" failonerror="true">
+    <arg value="install" />
+  </exec>
+</target>
+
+<target name="tests">
+
+  <delete dir="${tests.build}" />
+  <mkdir dir="${tests.build}" />
+
+  <exec executable="${cmake.bin}" dir="${tests.build}" failonerror="true" >
+    <arg value="-DCMAKE_INSTALL_PREFIX=${install.host.dir}" />
+    <arg value="-DGTEST_INCLUDE_DIR=${install.host.dir}/include}" />
+    <arg value="-DINSTALL_INCLUDE_DIR=${install.host.dir}/include" />
+    <arg value="-DDEPENDENCIES_LIBRARY_DIR=${install.host.dir}/lib" />
+    <arg value="-DDEPENDENCIES_INCLUDE_DIR=${install.host.dir}/include" />
+    <arg value="-DINSTALL_LIBRARY_DIR=${install.host.dir}/lib" />
+    <arg value="${tests.dir}" />
+  </exec>
+
+  <exec executable="make" dir="${tests.build}" failonerror="true">
+  </exec>
+
+  <exec executable="make" dir="${tests.build}" failonerror="true">
+    <arg value="install" />
+  </exec>
+
+  <exec executable="${test.bin}" failonerror="true">
+  </exec>
+
 </target>
 
 </project>

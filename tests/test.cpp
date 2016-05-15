@@ -3,11 +3,12 @@
 #include <stdint.h>
 extern "C" {
 #include <stdbool.h>
-#include "ringbuffer.h"
+#include <stdlib.h>
+#include "ringbuffer/ringbuffer.h"
 }
 
-#include "ringbuffer.h"
-
+//#include "ringbuffer/ringbuffer.h"
+#include "RingBufferTests.h"
 
 TEST_F(RingBufferTests, INIT)
 {
