@@ -11,7 +11,7 @@
 <property name="test.bin"                 value="${install.host.dir}/bin/ringbuffer_test" />
 <property name="build"                    value="${basedir}/build" />
 
-<target name="all" depends="cmake, gtest" />
+<target name="all" depends="cmake, gtest, tests" />
 
 <target name="cmake">
   <exec executable="./configure" dir="${cmake.dir}" failonerror="true">
