@@ -60,6 +60,7 @@
     <arg value="-DDEPENDENCIES_LIBRARY_DIR=${install.host.dir}/lib" />
     <arg value="-DDEPENDENCIES_INCLUDE_DIR=${install.host.dir}/include" />
     <arg value="-DINSTALL_LIBRARY_DIR=${install.host.dir}/lib" />
+    <arg value="-DCMAKE_BUILD_TYPE=Debug" />
     <arg value="${basedir}" />
   </exec>
 
@@ -71,7 +72,7 @@
   </exec>
 </target>
 
-<target name="tests">
+<target name="tests" depends="ringbuffer" >
 
   <delete dir="${tests.build}" />
   <mkdir dir="${tests.build}" />
@@ -83,6 +84,7 @@
     <arg value="-DDEPENDENCIES_LIBRARY_DIR=${install.host.dir}/lib" />
     <arg value="-DDEPENDENCIES_INCLUDE_DIR=${install.host.dir}/include" />
     <arg value="-DINSTALL_LIBRARY_DIR=${install.host.dir}/lib" />
+    <arg value="-DCMAKE_BUILD_TYPE=Debug" />
     <arg value="${tests.dir}" />
   </exec>
 

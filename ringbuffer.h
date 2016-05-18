@@ -17,17 +17,27 @@
  ******************************************************************************/
 #pragma once
 
-typedef struct ringbuffer_t ringbuffer_t;
+
+typedef struct
+{
+  size_t total;
+  size_t available;
+  uint8_t *base;
+  uint8_t *head;
+  uint8_t *tail;
+} ringbuffer_t;
+
+//typedef struct ringbuffer_t ringbuffer_t;
 // NOTE:
 // None of the functions below are thread safe when it comes to accessing the
 // *rb pointer. It is *NOT* possible to insert and pop/delete at the same time.
 // Callers must protect the *rb pointer separately.
 // Create a ringbuffer with the specified size
-ringbuffer_t* ringbuffer_init(const size_t size, uint8_t *preallocated_buffer);
+bool ringbuffer_init(ringbuffer_t *rb, const size_t size, uint8_t *preallocated_buffer);
 // Frees the ringbuffer structure and buffer
 // Save to call with NULL.
 
-void ringbuffer_free(ringbuffer_t *rb);
+//void ringbuffer_free(ringbuffer_t *rb);
 
 // Returns remaining buffer size
 bool ringbuffer_available(const ringbuffer_t *rb, size_t *result);

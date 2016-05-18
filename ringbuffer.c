@@ -20,23 +20,20 @@
 #include <stdint.h>
 #include "ringbuffer.h"
 
-struct ringbuffer_t 
-{
-  size_t total;
-  size_t available;
-  uint8_t *base;
-  uint8_t *head;
-  uint8_t *tail;
-};
 
-static ringbuffer_t buffer;
-
-ringbuffer_t* ringbuffer_init(const size_t size, uint8_t *preallocated_buffer) 
+bool ringbuffer_init(ringbuffer_t *rb, const size_t size, uint8_t *preallocated_buffer) 
 {
-  ringbuffer_t* p = &buffer;
-  p->head = p->tail = p->base = preallocated_buffer;
-  p->total = p->available = size;
-  return p;
+   bool status = false;
+   
+   if (0 != rb && 0 != preallocated_buffer)
+   {
+      rb->head  = rb->tail      = rb->base = preallocated_buffer;
+      rb->total = rb->available = size;
+      status = true;
+   }
+
+  return status;
+
 }
 
 
@@ -45,7 +42,7 @@ bool ringbuffer_available(const ringbuffer_t *rb, size_t *result)
 
   bool status = false;
 
-  if (0 != rb)
+  if (0 != rb && 0 != result)
   {
     status = true;
     *result = rb->available;
@@ -157,7 +154,7 @@ bool ringbuffer_peek(const ringbuffer_t *rb, uint8_t *p, size_t length, size_t *
       }
 
       *result = copied;
-
+      status  = true;
     } 
 
     return status;
@@ -167,7 +164,7 @@ bool ringbuffer_pop(ringbuffer_t *rb, uint8_t *p, size_t length, size_t *result)
 {
   bool status = false;
 
-  if (0 != status && 0 != rb && 0 != p)
+  if (0 != result && 0 != rb && 0 != p)
   {
 
      bool status_peek = false; 
@@ -185,8 +182,8 @@ bool ringbuffer_pop(ringbuffer_t *rb, uint8_t *p, size_t length, size_t *result)
 	 }
 
          rb->available += copied;
-         *result = copied;
 
+         *result = copied;
          status = true;
      }
 
