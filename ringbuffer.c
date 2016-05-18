@@ -90,6 +90,11 @@ bool ringbuffer_insert(ringbuffer_t *rb, const uint8_t *p, size_t length, size_t
         }
     }
 
+    if (0 < available)
+    {
+      status  = true;
+    }
+
     rb->available -= length;
     *result = length;
   }

@@ -1,27 +1,52 @@
 /* Test Suite for ringbuffer */
 
 #include <stdint.h>
+#include <iomanip>
 extern "C" {
 #include <stdbool.h>
 #include <stdlib.h>
 #include "ringbuffer/ringbuffer.h"
 }
 
-//#include "ringbuffer/ringbuffer.h"
 #include "RingBufferTests.h"
 #define BUFFER_SIZE   4096
 #define RESULT_SIZE   512
+#define INSERT_SIZE   256
 
 uint8_t buffer_raw[BUFFER_SIZE];
+uint8_t buffer_random[BUFFER_SIZE];
+uint8_t buffer_copy[BUFFER_SIZE];
 uint8_t buffer_result[RESULT_SIZE];
+uint8_t buffer_insert[INSERT_SIZE];
 
 ringbuffer_t buffer_meta;
 
-TEST_F(RingBufferTests, FILL_AND_EMPTY)
+static bool generate_document(uint8_t* const storage, const uint32_t length )
+{
+   bool result = false;
+
+   srand(time(0));
+   memset((void*)storage, 0, (size_t)length);
+
+   if (0 != storage)
+   {
+      for (uint32_t i = 0; i < length; i++)
+      {
+         storage[i] = rand()%255;
+      }
+   }
+
+   return result;
+}
+
+
+TEST_F(RingBufferTests, OVERFILL_AND_EMPTY)
 {
 
     size_t available = 0;
     size_t size      = 0; 
+
+    generate_document(buffer_random, BUFFER_SIZE);
 
     EXPECT_EQ(false, ringbuffer_init(0, 0, 0));
     EXPECT_EQ(false, ringbuffer_init(0, BUFFER_SIZE, buffer_raw));
@@ -60,6 +85,61 @@ TEST_F(RingBufferTests, FILL_AND_EMPTY)
     EXPECT_EQ(true,  ringbuffer_pop(&buffer_meta, buffer_result, RESULT_SIZE, &size));
     EXPECT_EQ(0, size);
 
+
+    uint8_t data = 0xAB;
+
+    /* fill the buffer with random data */
+    for (int i = 0; i < BUFFER_SIZE; ++i)
+    {
+       /* test available */
+       EXPECT_EQ(true, ringbuffer_available(&buffer_meta, &size));
+       EXPECT_EQ(size, BUFFER_SIZE-i);
+
+       /* test buffer size */
+       EXPECT_EQ(true, ringbuffer_size(&buffer_meta, &size));
+       EXPECT_EQ(size, i);
+
+       /* test insert */
+       EXPECT_EQ(true, ringbuffer_insert(&buffer_meta, buffer_random+i , 1, &size));
+       EXPECT_EQ(1, size); 
+    }
+
+    /* attempt to stuff more data into the full buffer */
+    EXPECT_EQ(false, ringbuffer_insert(&buffer_meta, &data , 1, &size));
+    EXPECT_EQ(0, size); 
+
+
+    /* empty the buffer into another buffer for comparison  */
+    for (int i = 0; i < BUFFER_SIZE; ++i)
+    {
+       /* test available */
+       EXPECT_EQ(true, ringbuffer_available(&buffer_meta, &size));
+       EXPECT_EQ(size, i);
+
+       /* test buffer size */
+       EXPECT_EQ(true, ringbuffer_size(&buffer_meta, &size));
+       EXPECT_EQ(size, BUFFER_SIZE-i);
+ 
+       /* test pop */
+       EXPECT_EQ(true, ringbuffer_pop(&buffer_meta, buffer_copy+i , 1, &size));
+       EXPECT_EQ(1, size); 
+    }
+
+    /* test pop on empty buffer */
+    EXPECT_EQ(true, ringbuffer_pop(&buffer_meta, &data , 1, &size));
+    EXPECT_EQ(0, size); 
+ 
+    /* compare original random document to the copied document */
+    EXPECT_EQ(0, memcmp(buffer_copy, buffer_random, BUFFER_SIZE)); 
+
+    /* test available on empty buffer */
+    EXPECT_EQ(true, ringbuffer_available(&buffer_meta, &size));
+    EXPECT_EQ(size, BUFFER_SIZE);
+
+    /* test buffer size on empty buffer */
+    EXPECT_EQ(true, ringbuffer_size(&buffer_meta, &size));
+    EXPECT_EQ(size, 0);
+ 
 
 }
 
